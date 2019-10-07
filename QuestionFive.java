@@ -1,5 +1,6 @@
 package com.salone.hackathon;
 
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,40 +8,61 @@ public class QuestionFive {
 
     public static void main(String[] args) {
 
-        Map<String, Integer> multipleKeysMap = new HashMap<>(){{
-                put("hi bye there",3);
-                put("go there hi",4);
-        }};
+     File file = new File("helloworld.csv");
 
-
-        sumUpKeyValue(multipleKeysMap,"hi bye there",4);
-
+        populateMapWithCSV(file);
 
     }
 
 
-    public static void sumUpKeyValue(Map<String,Integer> inputMap, String key, int increment){
 
-        if(inputMap.isEmpty()){
-            System.out.println("Please put some keys and values into the Map");
-        }
-        if(key.equals("")){
-            System.out.println("Provide a key");
-        }
-        if(increment < 0){
-            System.out.println("Input positive increment values.");
-        }
-        if(!inputMap.isEmpty() && (!key.isEmpty()) && (increment > 0)){
-            if(inputMap.containsKey(key)){
-                int keysValue = inputMap.get(key);
+    public static void populateMapWithCSV(File file){
 
-                keysValue += increment;
+            Map<String, Integer> outputMap = new HashMap<>();
+            try {
+                FileReader fileReader = new FileReader(file);
+                BufferedReader bufferedReader = new BufferedReader(fileReader);
+                String aLine;
+                String [] lines;
+                String trimmedString;
 
-                inputMap.put(key,keysValue);
+                while((aLine = bufferedReader.readLine()) != null){
+                    lines = aLine.split(",");
 
-                System.out.println(key + " new value is " + inputMap.get(key));
+                    if(lines.length > 0){
+                        String newString = "";
+                        for(String s : lines){
+                            newString += s + " ";
+                        }
+
+                        trimmedString = newString.trim();
+
+                        String key = trimmedString.substring(0, trimmedString.length() - 1);
+                        int value = Integer.parseInt(trimmedString.substring(trimmedString.length() - 1));
+
+                        if(!outputMap.containsKey(key)){
+
+                            outputMap.put(key,value);
+                        }else{
+                            int keyValue = outputMap.get(key);
+                            keyValue += value;
+
+                            outputMap.put(key , keyValue);
+                        }
+
+
+
+                    }
+                }
+
+                System.out.println(outputMap);
+
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }
 
 
     }
